@@ -1,0 +1,68 @@
+The core classes, functions, and methods that will be necessary are:
+
+1. `HTMLExtractor`: A class that will handle the extraction of text from the HTML file. It will have the following methods:
+   - `__init__(self, file_path)`: Initializes the HTMLExtractor with the path to the HTML file.
+   - `extract_text(self)`: Extracts the text from the "h", "div", and "p" tags in the HTML file.
+
+2. `SQLQueryBuilder`: A class that will handle the creation of the SQL query. It will have the following methods:
+   - `__init__(self, table_name)`: Initializes the SQLQueryBuilder with the name of the table to insert into.
+   - `insert(self, headline, content)`: Creates an SQL query to insert the given headline and content into the table.
+
+3. `main`: A function that will serve as the entry point for the program. It will create an instance of `HTMLExtractor`, extract the text from the HTML file, create an instance of `SQLQueryBuilder`, and create the SQL query.
+
+Now, let's write the code for each of these components.
+
+requirements.txt
+```txt
+beautifulsoup4==4.9.3
+mysql-connector-python==8.0.26
+```
+
+html_extractor.py
+```python
+from bs4 import BeautifulSoup
+
+class HTMLExtractor:
+    def __init__(self, file_path):
+        with open(file_path, 'r') as file:
+            self.soup = BeautifulSoup(file.read(), 'html.parser')
+
+    def extract_text(self):
+        text = ''
+        for tag in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'p']:
+            elements = self.soup.find_all(tag)
+            for element in elements:
+                text += ' ' + element.get_text()
+        return text.strip()
+```
+
+sql_query_builder.py
+```python
+class SQLQueryBuilder:
+    def __init__(self, table_name):
+        self.table_name = table_name
+
+    def insert(self, headline, content):
+        query = f"INSERT INTO {self.table_name} (headline, content) VALUES ('{headline}', '{content}');"
+        return query
+```
+
+main.py
+```python
+from html_extractor import HTMLExtractor
+from sql_query_builder import SQLQueryBuilder
+
+def main():
+    extractor = HTMLExtractor('path_to_your_html_file.html')
+    text = extractor.extract_text()
+
+    builder = SQLQueryBuilder('articles')
+    query = builder.insert('Your Headline', text)
+
+    print(query)
+
+if __name__ == "__main__":
+    main()
+```
+
+Please replace `'path_to_your_html_file.html'` with the actual path to your HTML file and `'Your Headline'` with the actual headline you want to use.

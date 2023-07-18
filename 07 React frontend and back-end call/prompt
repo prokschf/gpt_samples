@@ -1,0 +1,1 @@
+A react front-end that with a centered text box that lets the user enter a city. the text box has auto complete and uses a freely available API to do the text completion. on selection a freely available weather api is called to display extensive weather information.

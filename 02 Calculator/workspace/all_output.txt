@@ -1,0 +1,101 @@
+The architecture of the calculator tool will consist of two main parts:
+
+1. A Calculator class that will perform the mathematical operations.
+2. A main function that will handle the command line input and output.
+
+The Calculator class will have the following methods:
+
+- `add`: Adds two numbers.
+- `subtract`: Subtracts the second number from the first.
+- `multiply`: Multiplies two numbers.
+- `divide`: Divides the first number by the second. Throws an error if the second number is zero.
+- `power`: Raises the first number to the power of the second. Throws an error if the power is not an integer.
+
+The main function will:
+
+- Parse the command line input.
+- Create an instance of the Calculator class.
+- Call the appropriate method of the Calculator class based on the operation specified in the command line input.
+- Print the result of the operation.
+- Handle any errors that occur during the operation.
+
+Now, let's write the code for each part of the architecture.
+
+calculator.py
+```python
+class Calculator:
+    def add(self, num1, num2):
+        return num1 + num2
+
+    def subtract(self, num1, num2):
+        return num1 - num2
+
+    def multiply(self, num1, num2):
+        return num1 * num2
+
+    def divide(self, num1, num2):
+        if num2 == 0:
+            raise ValueError("Cannot divide by zero")
+        return num1 / num2
+
+    def power(self, num1, num2):
+        if not num2.is_integer():
+            raise ValueError("Power must be an integer")
+        return num1 ** num2
+```
+
+main.py
+```python
+import sys
+from calculator import Calculator
+
+def main():
+    if len(sys.argv) != 4:
+        print("Usage: python main.py number1 operation number2")
+        return
+
+    num1, operation, num2 = sys.argv[1], sys.argv[2], sys.argv[3]
+
+    try:
+        num1 = float(num1)
+        num2 = float(num2)
+    except ValueError:
+        print("Both numbers must be valid numbers")
+        return
+
+    calculator = Calculator()
+
+    if operation == "+":
+        result = calculator.add(num1, num2)
+    elif operation == "-":
+        result = calculator.subtract(num1, num2)
+    elif operation == "*":
+        result = calculator.multiply(num1, num2)
+    elif operation == "/":
+        try:
+            result = calculator.divide(num1, num2)
+        except ValueError as e:
+            print(str(e))
+            return
+    elif operation == "^":
+        try:
+            result = calculator.power(num1, num2)
+        except ValueError as e:
+            print(str(e))
+            return
+    else:
+        print("Invalid operation. Must be one of +, -, *, /, ^")
+        return
+
+    print(result)
+
+if __name__ == "__main__":
+    main()
+```
+
+requirements.txt
+```txt
+No external libraries are required.
+```
+
+To run the program, the user would type a command like `python main.py 5 + 3` in the command line. The program would then print the result of the operation, which in this case would be `8`.

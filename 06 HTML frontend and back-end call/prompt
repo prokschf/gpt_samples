@@ -1,0 +1,1 @@
+A HTML front-end where a user can select a country from a dropdown. After that a new dropdown appears with cities in the selected country. The user then has 3 buttons: "temprature", "forecast" and "historical". Pressing a button will make a call to a mock API endpoint requesting data for the selected country and city.

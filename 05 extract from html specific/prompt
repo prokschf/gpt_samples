@@ -1,0 +1,1 @@
+A python program that reads a html file and extracts articles. The output is to be written to an SQL database. The database has the tables articles. The output is the sql query to insert into the database.

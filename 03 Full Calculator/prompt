@@ -1,0 +1,1 @@
+A calculator tool in python. Via command line a mathematical expression is input. The expressions contains numbers, operations and brackets. The output s the calculated result of the mathematical operation. Include the following operations: addition, subtraction, division, multiplication and power.

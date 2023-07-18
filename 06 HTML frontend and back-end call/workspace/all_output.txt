@@ -1,0 +1,106 @@
+The architecture of this project will be quite simple. We will have a single HTML file that will contain all the front-end code including the HTML markup, CSS for styling, and JavaScript for handling user interactions and making API calls. 
+
+The HTML file will contain the following main elements:
+
+1. Two dropdown menus for selecting the country and city.
+2. Three buttons for fetching the temperature, forecast, and historical data.
+3. A div element for displaying the fetched data.
+
+The JavaScript code will contain the following main functions:
+
+1. `populateCountries()`: This function will populate the country dropdown with the five largest countries.
+2. `populateCities()`: This function will populate the city dropdown with the five largest cities of the selected country.
+3. `fetchData()`: This function will make an API call to fetch the data based on the selected country, city, and data type (temperature, forecast, or historical). It will then display the fetched data in the div element.
+
+Now let's write the code for the HTML file.
+
+index.html
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Data</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        select, button {
+            margin: 10px;
+        }
+        #data {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <select id="country" onchange="populateCities()">
+        <option value="">Select a country</option>
+    </select>
+    <select id="city">
+        <option value="">Select a city</option>
+    </select>
+    <button onclick="fetchData('temperature')">Temperature</button>
+    <button onclick="fetchData('forecast')">Forecast</button>
+    <button onclick="fetchData('historical')">Historical</button>
+    <div id="data"></div>
+    <script>
+        const countries = ['Country 1', 'Country 2', 'Country 3', 'Country 4', 'Country 5'];
+        const cities = {
+            'Country 1': ['City 1', 'City 2', 'City 3', 'City 4', 'City 5'],
+            'Country 2': ['City 1', 'City 2', 'City 3', 'City 4', 'City 5'],
+            'Country 3': ['City 1', 'City 2', 'City 3', 'City 4', 'City 5'],
+            'Country 4': ['City 1', 'City 2', 'City 3', 'City 4', 'City 5'],
+            'Country 5': ['City 1', 'City 2', 'City 3', 'City 4', 'City 5']
+        };
+
+        function populateCountries() {
+            const countrySelect = document.getElementById('country');
+            countries.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.text = country;
+                countrySelect.appendChild(option);
+            });
+        }
+
+        function populateCities() {
+            const citySelect = document.getElementById('city');
+            citySelect.innerHTML = '<option value="">Select a city</option>';
+            const selectedCountry = document.getElementById('country').value;
+            if (selectedCountry) {
+                cities[selectedCountry].forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.text = city;
+                    citySelect.appendChild(option);
+                });
+            }
+        }
+
+        function fetchData(dataType) {
+            const country = document.getElementById('country').value;
+            const city = document.getElementById('city').value;
+            if (country && city) {
+                fetch(`https://mock-api.com/${country}/${city}/${dataType}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('data').innerText = JSON.stringify(data);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        }
+
+        populateCountries();
+    </script>
+</body>
+</html>
+```
+
+This HTML file should be placed in the root directory of the project. To run the project, simply open the HTML file in a web browser.

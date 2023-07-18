@@ -1,0 +1,148 @@
+The core classes, functions, and methods necessary for this project are:
+
+1. `App`: This is the main React component that will contain all other components and manage the state of the application.
+
+2. `SearchBox`: This is a React component that will render the search box and handle the auto-complete feature using the Google Places API.
+
+3. `WeatherTable`: This is a React component that will render the weather information in a table format.
+
+4. `fetchWeatherData`: This is a function that will fetch the weather data from the OpenWeatherMap API.
+
+5. `handlePlaceSelect`: This is a function that will handle the event when a place is selected from the auto-complete suggestions.
+
+Now, let's write the code for each of these components and functions.
+
+First, we need to create a `package.json` file to manage our NodeJS dependencies.
+
+package.json
+```json
+{
+  "name": "weather-app",
+  "version": "1.0.0",
+  "description": "A React app that displays weather information for a selected city",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "react-google-places-autocomplete": "^3.2.2",
+    "axios": "^0.21.1"
+  }
+}
+```
+
+Next, we create the main entry point of our application, `index.js`.
+
+index.js
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+```
+
+Then, we create the `App` component in `App.js`.
+
+App.js
+```javascript
+import React, { useState } from 'react';
+import SearchBox from './SearchBox';
+import WeatherTable from './WeatherTable';
+import fetchWeatherData from './fetchWeatherData';
+
+function App() {
+  const [weatherData, setWeatherData] = useState(null);
+
+  const handlePlaceSelect = async (placeId) => {
+    const data = await fetchWeatherData(placeId);
+    setWeatherData(data);
+  };
+
+  return (
+    <div className="App">
+      <SearchBox onPlaceSelect={handlePlaceSelect} />
+      {weatherData && <WeatherTable data={weatherData} />}
+    </div>
+  );
+}
+
+export default App;
+```
+
+Next, we create the `SearchBox` component in `SearchBox.js`.
+
+SearchBox.js
+```javascript
+import React from 'react';
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+
+function SearchBox({ onPlaceSelect }) {
+  return (
+    <GooglePlacesAutocomplete
+      onSelect={(selectedPlace) => onPlaceSelect(selectedPlace.place_id)}
+    />
+  );
+}
+
+export default SearchBox;
+```
+
+Then, we create the `WeatherTable` component in `WeatherTable.js`.
+
+WeatherTable.js
+```javascript
+import React from 'react';
+
+function WeatherTable({ data }) {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Temperature</th>
+          <th>Weather</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.list.map((item) => (
+          <tr key={item.dt}>
+            <td>{new Date(item.dt * 1000).toLocaleDateString()}</td>
+            <td>{item.main.temp}</td>
+            <td>{item.weather[0].description}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+export default WeatherTable;
+```
+
+Finally, we create the `fetchWeatherData` function in `fetchWeatherData.js`.
+
+fetchWeatherData.js
+```javascript
+import axios from 'axios';
+
+async function fetchWeatherData(placeId) {
+  const response = await axios.get(`https://api.openweathermap.org/data/2.5/forecast/daily?placeid=${placeId}&appid=YOUR_OPENWEATHERMAP_API_KEY`);
+  return response.data;
+}
+
+export default fetchWeatherData;
+```
+
+Please replace `YOUR_OPENWEATHERMAP_API_KEY` with your actual OpenWeatherMap API key.
