@@ -1,0 +1,14 @@
+{
+  "name": "weather-app",
+  "version": "1.0.0",
+  "description": "A simple weather app that uses Google Places and OpenWeatherMap APIs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "dotenv": "^8.2.0",
+    "axios": "^0.21.1"
+  }
+}

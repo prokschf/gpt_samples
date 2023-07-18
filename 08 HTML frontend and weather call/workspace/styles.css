@@ -1,0 +1,29 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+#app {
+  width: 600px;
+  margin: 0 auto;
+}
+
+#city {
+  width: 100%;
+  padding: 10px;
+  font-size: 20px;
+}
+
+#weather {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+#weather th, #weather td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+#weather th {
+  background-color: #f2f2f2;
+}
