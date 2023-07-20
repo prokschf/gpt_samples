@@ -1,0 +1,99 @@
+Given the requirements, we will need to create the following Kubernetes manifest files:
+
+1. `backend-deployment.yaml`: This file will define the Deployment for the backend Python application running on an Nginx base image. The Deployment will ensure that three replicas of the backend application are always running.
+
+2. `frontend-deployment.yaml`: This file will define the Deployment for the frontend React application. The Deployment will ensure that three replicas of the frontend application are always running.
+
+3. `backend-service.yaml`: This file will define a Service that exposes the backend Deployment on a set network port within the cluster. This allows the frontend pods to communicate with the backend pods.
+
+4. `frontend-service.yaml`: This file will define a Service that exposes the frontend Deployment on a set network port within the cluster. This allows the AWS Elastic Load Balancer to route external HTTP traffic from port 443 (HTTPS) to the frontend pods on port 8080.
+
+Let's start with the `backend-deployment.yaml` file:
+
+backend-deployment.yaml
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+```
+
+Next, we have the `frontend-deployment.yaml` file:
+
+frontend-deployment.yaml
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: nginx:latest
+        ports:
+        - containerPort: 8080
+```
+
+Then, we have the `backend-service.yaml` file:
+
+backend-service.yaml
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+```
+
+Finally, we have the `frontend-service.yaml` file:
+
+frontend-service.yaml
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 8080
+```
+
+Please note that the `frontend-service.yaml` file includes annotations to configure the AWS Elastic Load Balancer to listen on port 443 (HTTPS) and route traffic to the frontend pods on port 8080.

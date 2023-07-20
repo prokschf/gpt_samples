@@ -1,0 +1,29 @@
+Since the task is to write an SQL query, there is no need for multiple files, classes, functions, or methods. The SQL query will be a standalone piece of code that can be executed in any SQL environment that has access to the 'employees' and 'projects' tables.
+
+The SQL query will join the 'employees' and 'projects' tables on the 'ID' and 'fk_employee_id' fields, respectively. It will then filter out employees who are not associated with any project or who are associated with multiple projects. The query will also handle duplicate names in the 'employees' table by outputting all of them, and handle duplicate project names in the 'projects' table by outputting the one with the highest 'id'. The results will be ordered alphabetically by employee name.
+
+Here is the SQL query:
+
+query.sql
+```sql
+SELECT e.name, p.name
+FROM employees e
+JOIN (
+    SELECT name, fk_employee_id
+    FROM projects
+    WHERE id IN (
+        SELECT MAX(id)
+        FROM projects
+        GROUP BY name
+    )
+) p ON e.ID = p.fk_employee_id
+WHERE e.ID IN (
+    SELECT fk_employee_id
+    FROM projects
+    GROUP BY fk_employee_id
+    HAVING COUNT(id) = 1
+)
+ORDER BY e.name ASC;
+```
+
+This query first creates a subquery that selects the project with the highest 'id' for each project name. It then joins this subquery with the 'employees' table on the 'ID' and 'fk_employee_id' fields. The query then filters out employees who are not associated with any project or who are associated with multiple projects by using a subquery in the WHERE clause that groups the 'projects' table by 'fk_employee_id' and selects only those 'fk_employee_id's that have a count of 1. Finally, the results are ordered alphabetically by employee name.

@@ -1,0 +1,1 @@
+A program that gets a time series of temperatures as input in a 1 hour interval. The program will use a neural net to predict the following temperatures

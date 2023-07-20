@@ -1,0 +1,100 @@
+The AWS Serverless Application Model (SAM) is an open-source framework for building serverless applications. It extends AWS CloudFormation to provide a simplified way of defining the Amazon API Gateway APIs, AWS Lambda functions, and Amazon DynamoDB tables needed by your serverless application.
+
+We will create a SAM template file, `template.yaml`, which will define our serverless application. This file will include the definition of our DynamoDB table, our two Lambda functions, and the API Gateway.
+
+template.yaml
+```yaml
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An AWS Serverless Application Model (SAM) template for a 3-tier serverless architecture.
+
+Resources:
+  PicturesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: pictures
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: url
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  GetPictureFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_picture/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Policies:
+        - S3ReadPolicy:
+            BucketName: my-s3-bucket
+        - DynamoDBReadPolicy:
+            TableName: !Ref PicturesTable
+      Events:
+        GetPicture:
+          Type: Api
+          Properties:
+            Path: /picture
+            Method: get
+
+  FrontEndFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: front_end/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        FrontEnd:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+```
+
+This SAM template defines a DynamoDB table named 'pictures' with 'id' as the primary key and 'url' as another attribute. It also defines two Lambda functions, 'GetPictureFunction' and 'FrontEndFunction'. The 'GetPictureFunction' has read access to an S3 bucket and the 'pictures' DynamoDB table. The 'FrontEndFunction' is connected to an API Gateway with a 'get' endpoint at the root path.
+
+The actual code for the Lambda functions will be in Python and located in the `get_picture/app.py` and `front_end/app.py` files respectively.
+
+get_picture/app.py
+```python
+import boto3
+import os
+
+def lambda_handler(event, context):
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table(os.getenv('TABLE_NAME'))
+    picture_id = event['pathParameters']['id']
+    response = table.get_item(Key={'id': picture_id})
+    return {
+        'statusCode': 200,
+        'body': response['Item']
+    }
+```
+
+front_end/app.py
+```python
+import boto3
+import os
+
+def lambda_handler(event, context):
+    lambda_client = boto3.client('lambda')
+    response = lambda_client.invoke(
+        FunctionName=os.getenv('GET_PICTURE_FUNCTION'),
+        InvocationType='RequestResponse',
+        Payload=event
+    )
+    return {
+        'statusCode': 200,
+        'body': response['Payload'].read()
+    }
+```
+
+The `get_picture/app.py` file contains the code for the 'GetPictureFunction' Lambda function. This function retrieves a picture item from the 'pictures' DynamoDB table based on the 'id' provided in the event.
+
+The `front_end/app.py` file contains the code for the 'FrontEndFunction' Lambda function. This function invokes the 'GetPictureFunction' Lambda function and returns its response.

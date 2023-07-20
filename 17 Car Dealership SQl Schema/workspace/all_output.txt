@@ -1,0 +1,53 @@
+Based on the requirements, we will need to create an SQL schema with four tables: `Cars`, `Owners`, `Employees`, and `Purchases`. 
+
+The `Cars` table will store information about the cars available at the dealership, including their brand, model, year of construction, color, mileage, and condition. 
+
+The `Owners` table will store information about the owners of the cars, including their name, phone number, address, and email. 
+
+The `Employees` table will store information about the employees selling the cars, including their names. 
+
+The `Purchases` table will store information about the purchases made for a car, including who bought it, at what price, at what date, and which employee sold it. 
+
+The `Purchases` table will have foreign keys referencing the `Cars`, `Owners`, and `Employees` tables to establish the relationships between these entities.
+
+Here is the SQL code to create these tables:
+
+schema.sql
+```sql
+CREATE TABLE Cars (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    brand VARCHAR(50),
+    model VARCHAR(50),
+    year_of_construction INT,
+    color VARCHAR(20),
+    mileage INT,
+    condition VARCHAR(20)
+);
+
+CREATE TABLE Owners (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50),
+    phone_number VARCHAR(15),
+    address VARCHAR(100),
+    email VARCHAR(50)
+);
+
+CREATE TABLE Employees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50)
+);
+
+CREATE TABLE Purchases (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    car_id INT,
+    owner_id INT,
+    employee_id INT,
+    price DECIMAL(10, 2),
+    date_of_purchase DATE,
+    FOREIGN KEY (car_id) REFERENCES Cars(id),
+    FOREIGN KEY (owner_id) REFERENCES Owners(id),
+    FOREIGN KEY (employee_id) REFERENCES Employees(id)
+);
+```
+
+This SQL schema can be used to manage the data of a car dealership. The `Cars`, `Owners`, `Employees`, and `Purchases` tables can be populated with the appropriate data, and SQL queries can be used to retrieve and manipulate this data as needed.

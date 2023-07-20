@@ -1,0 +1,1 @@
+An AWS SAM deployment for a 3 tier serverless architecture. The db tier is a dynamodb table name pictures. The back-end tier is a lambda called get picture that needs access to an S3 bucket and the pictures table. the front-end is a lambda function that is connected to an api gateway with 1 index get endpoint.

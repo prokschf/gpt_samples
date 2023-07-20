@@ -1,0 +1,1 @@
+write kubernetes manifest files for the deployment of a 2 tier architecture. We need 3 nodes and pods for the back-end and front-end containers.  The front-end is called through an aws elastic load balancer.

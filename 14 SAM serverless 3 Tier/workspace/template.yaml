@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An AWS Serverless Application Model (SAM) template for a 3-tier serverless architecture.
+
+Resources:
+  PicturesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: pictures
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: url
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  GetPictureFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: get_picture/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Policies:
+        - S3ReadPolicy:
+            BucketName: my-s3-bucket
+        - DynamoDBReadPolicy:
+            TableName: !Ref PicturesTable
+      Events:
+        GetPicture:
+          Type: Api
+          Properties:
+            Path: /picture
+            Method: get
+
+  FrontEndFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: front_end/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        FrontEnd:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get

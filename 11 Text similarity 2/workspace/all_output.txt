@@ -1,0 +1,75 @@
+Given the requirements, we will need the following core classes, functions, and methods:
+
+1. `EmbeddingModel`: This class will be responsible for loading the pre-trained embedding model and providing a method to get the embeddings for a given sentence.
+
+2. `SemanticSimilarityCalculator`: This class will be responsible for calculating the semantic similarity between two sentences. It will use an instance of `EmbeddingModel` to get the embeddings for the sentences and then calculate the cosine similarity between them.
+
+3. `main`: This function will be the entry point of the program. It will take two sentences as input, use an instance of `SemanticSimilarityCalculator` to calculate the semantic similarity between them, and then print the result.
+
+Now, let's write the code for each of these components.
+
+requirements.txt
+```txt
+numpy
+scipy
+torch
+transformers
+```
+
+embedding_model.py
+```python
+from transformers import AutoTokenizer, AutoModel
+import torch
+
+class EmbeddingModel:
+    def __init__(self, model_name='bert-base-uncased'):
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name)
+
+    def get_embedding(self, sentence):
+        inputs = self.tokenizer(sentence, return_tensors='pt')
+        outputs = self.model(**inputs)
+        return outputs.last_hidden_state[0].mean(dim=0).detach().numpy()
+```
+
+semantic_similarity_calculator.py
+```python
+from scipy.spatial.distance import cosine
+from .embedding_model import EmbeddingModel
+
+class SemanticSimilarityCalculator:
+    def __init__(self, embedding_model):
+        self.embedding_model = embedding_model
+
+    def calculate_similarity(self, sentence1, sentence2):
+        embedding1 = self.embedding_model.get_embedding(sentence1)
+        embedding2 = self.embedding_model.get_embedding(sentence2)
+        return 1 - cosine(embedding1, embedding2)
+```
+
+main.py
+```python
+import sys
+from .semantic_similarity_calculator import SemanticSimilarityCalculator
+from .embedding_model import EmbeddingModel
+
+def main():
+    sentences = sys.argv[1:]
+    if len(sentences) != 2:
+        print('Please provide exactly two sentences.')
+        return
+
+    embedding_model = EmbeddingModel()
+    calculator = SemanticSimilarityCalculator(embedding_model)
+    similarity = calculator.calculate_similarity(*sentences)
+    print(f'The semantic similarity between the sentences is {similarity}.')
+
+if __name__ == '__main__':
+    main()
+```
+
+This program can be run from the command line with two sentences as arguments, like so:
+
+```bash
+python main.py "This is sentence 1." "I have an apple."
+```

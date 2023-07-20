@@ -1,0 +1,1 @@
+you get the url to an image as input. Run a pre trained image segmentation model and output a list of strings with the objects in the image

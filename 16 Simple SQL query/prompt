@@ -1,0 +1,1 @@
+An SQL query that fetches data from two tables. The first table is called employees and has the columns ID, name, first_name, role. The second table is called projects and has the columns id, name, fk_employee_id. Have the SQl query output all employees in alphabetical order with their current project name joined.

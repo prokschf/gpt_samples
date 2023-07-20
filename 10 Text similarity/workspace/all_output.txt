@@ -1,0 +1,66 @@
+The architecture of the program will consist of the following core classes, functions, and methods:
+
+1. `SentenceEmbedder`: This class will be responsible for loading the pre-trained model and generating embeddings for the input sentences. It will have the following methods:
+    - `__init__`: This method will load the pre-trained model.
+    - `get_embedding`: This method will take a sentence as input and return its embedding.
+
+2. `SimilarityCalculator`: This class will be responsible for calculating the cosine similarity between two sentence embeddings. It will have the following methods:
+    - `calculate`: This method will take two sentence embeddings as input and return their cosine similarity.
+
+3. `main`: This function will be the entry point of the program. It will take two sentences as input, generate their embeddings using `SentenceEmbedder`, calculate their similarity using `SimilarityCalculator`, and return the similarity.
+
+Now, let's write the code for each file.
+
+**requirements.txt**
+```
+python
+```
+```python
+torch==1.8.1
+transformers==4.5.1
+scipy==1.6.2
+```
+
+**sentence_embedder.py**
+```python
+import torch
+from transformers import AutoTokenizer, AutoModel
+
+class SentenceEmbedder:
+    def __init__(self, model_name='bert-base-uncased'):
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name)
+
+    def get_embedding(self, sentence):
+        inputs = self.tokenizer(sentence, return_tensors='pt')
+        outputs = self.model(**inputs)
+        return outputs[0].mean(1).detach().numpy()
+```
+
+**similarity_calculator.py**
+```python
+from scipy.spatial.distance import cosine
+
+class SimilarityCalculator:
+    @staticmethod
+    def calculate(embedding1, embedding2):
+        return 1 - cosine(embedding1, embedding2)
+```
+
+**main.py**
+```python
+from sentence_embedder import SentenceEmbedder
+from similarity_calculator import SimilarityCalculator
+
+def main(sentence1, sentence2):
+    embedder = SentenceEmbedder()
+    embedding1 = embedder.get_embedding(sentence1)
+    embedding2 = embedder.get_embedding(sentence2)
+    similarity = SimilarityCalculator.calculate(embedding1, embedding2)
+    return similarity
+```
+
+To run the program, you can use the following command:
+```bash
+python main.py "This is the first sentence." "This is the second sentence."
+```
